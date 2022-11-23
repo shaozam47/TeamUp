@@ -12,4 +12,5 @@
     <color name="colorAccent">#0C90F1</color>
     <color name="primaryTextColor">#363A43</color>
     <color name="secondaryTextColor">#7A8089</color>>
+    <color name="snackBarColor">#F24600</color>
 </resources>
