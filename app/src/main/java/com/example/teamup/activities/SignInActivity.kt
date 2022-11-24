@@ -8,6 +8,8 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.example.teamup.R
+import com.example.teamup.models.User
+
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_sign_in.*
 
@@ -87,5 +89,11 @@ class SignInActivity : BaseActivity() {
 
     private fun showError(message: String) {
         Toast.makeText(this@SignInActivity, message, Toast.LENGTH_LONG).show()
+    }
+
+    fun signInSuccess(user: User?) {
+        hideProgressDialog()
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 }

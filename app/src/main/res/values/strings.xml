@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">TeamUp</string>
+    <string name="my_profile">My Profile</string>
+    <string name="nav_sign_out">Sign Out</string>
 </resources>

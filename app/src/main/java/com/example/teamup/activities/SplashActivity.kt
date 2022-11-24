@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.WindowManager
 import com.example.teamup.R
+import com.example.teamup.firebase.FireStoreClass
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,7 +18,13 @@ class SplashActivity : AppCompatActivity() {
         )
 
         Handler().postDelayed({
-            startActivity(Intent(this, Intro::class.java))
+            var currentUserID: String = FireStoreClass().getCurrentUserId()
+            if(currentUserID!="") {
+                startActivity(Intent(this, MainActivity::class.java))
+            }
+            else {
+                startActivity(Intent(this, Intro::class.java))
+            }
                     finish()
         }, 2500)
     }

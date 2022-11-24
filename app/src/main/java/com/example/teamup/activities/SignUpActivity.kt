@@ -7,6 +7,8 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.example.teamup.R
+import com.example.teamup.firebase.FireStoreClass
+import com.example.teamup.models.User
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -48,18 +50,11 @@ class SignUpActivity : BaseActivity() {
             showProgressDialog("Please Wait")
             FirebaseAuth.getInstance()
                 .createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-                    hideProgressDialog()
                     if (task.isSuccessful) {
                         val firebaseUser: FirebaseUser = task.result!!.user!!
                         val registeredEmail = firebaseUser.email!!
-                        Toast.makeText(
-                            this,
-                            "$name, you have successfully"
-                                    + "registered with email address $registeredEmail",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        FirebaseAuth.getInstance().signOut()
-                        finish()
+                        val user: User = User(firebaseUser.uid, name, registeredEmail)
+                        FireStoreClass().registerUser(this, user)
                     } else {
                         Toast.makeText(this, task.exception!!.message, Toast.LENGTH_SHORT).show()
                     }
@@ -89,5 +84,14 @@ class SignUpActivity : BaseActivity() {
 
     private fun showError(message: String) {
         Toast.makeText(this@SignUpActivity, message, Toast.LENGTH_LONG).show()
+    }
+
+    fun userRegisterSuccess() {
+        Toast.makeText(
+            this, "You have successfully registered.",
+            Toast.LENGTH_LONG).show()
+        hideProgressDialog()
+        FirebaseAuth.getInstance().signOut()
+        finish()
     }
 }

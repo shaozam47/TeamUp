@@ -13,7 +13,7 @@
         android:theme="@style/Theme.TeamUp"
         tools:targetApi="31">
         <activity
-            android:name=".BaseActivity"
+            android:name=".activities.BaseActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -59,7 +59,9 @@
         </activity>
         <activity
             android:name=".activities.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
