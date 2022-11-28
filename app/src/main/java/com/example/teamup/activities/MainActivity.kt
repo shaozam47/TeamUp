@@ -5,32 +5,68 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.teamup.R
+import com.example.teamup.adapters.BoardItemAdapter
 import com.example.teamup.firebase.FireStoreClass
+import com.example.teamup.models.Board
 import com.example.teamup.models.User
+import com.example.teamup.util.Constants
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
         const val MY_PROFILE_REQUEST_CODE: Int = 11
+        const val CREATE_BOARD_REQUEST_CODE: Int = 12
     }
+
+    private lateinit var mUserName: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         setUpActionBar()
         nav_view.setNavigationItemSelectedListener(this)
-        FireStoreClass().loadUserData(this@MainActivity)
+        FireStoreClass().loadUserData(this@MainActivity, true)
 
         fab_create_board.setOnClickListener{
-            startActivity(Intent(this, CreateBoardActivity::class.java))
+            val intent = Intent(this, CreateBoardActivity::class.java)
+            intent.putExtra(Constants.NAME, mUserName)
+            startActivityForResult(intent, CREATE_BOARD_REQUEST_CODE)
+        }
+    }
+
+    fun populateBoardsListToUI(boardList: ArrayList<Board>) {
+        hideProgressDialog()
+        if(boardList.size > 0) {
+            rv_boards_list.visibility = View.VISIBLE
+            tv_no_boards_available.visibility = View.GONE
+
+            rv_boards_list.layoutManager = LinearLayoutManager(this)
+            rv_boards_list.setHasFixedSize(true)
+
+            val adapter = BoardItemAdapter(this, boardList)
+            rv_boards_list.adapter = adapter
+
+            adapter.setOnClickListener(object: BoardItemAdapter.OnClickListener{
+                override fun onClick(position: Int, model: Board) {
+                    startActivity(Intent(this@MainActivity, TaskListActivity::class.java))
+                }
+            })
+        }
+        else {
+            rv_boards_list.visibility = View.GONE
+            tv_no_boards_available.visibility = View.VISIBLE
         }
     }
 
@@ -63,8 +99,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode==Activity.RESULT_OK && requestCode== MY_PROFILE_REQUEST_CODE) {
+        if(resultCode==Activity.RESULT_OK && requestCode==MY_PROFILE_REQUEST_CODE) {
             FireStoreClass().loadUserData(this@MainActivity)
+        }
+        else if(resultCode== Activity.RESULT_OK && requestCode== CREATE_BOARD_REQUEST_CODE) {
+            FireStoreClass().getBoardList(this@MainActivity)
         }
         else {
             Log.e("Cancelled", "Cancelled")
@@ -90,8 +129,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         return true
     }
 
-    fun updateNavigationUserDetails(user: User?) {
+    fun updateNavigationUserDetails(user: User?, readBoardList: Boolean) {
         if (user != null) {
+            mUserName = user.name
             Glide
                 .with(this@MainActivity)
                 .load(user.image)
@@ -100,6 +140,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 .into(nav_user_image)
 
             tv_username.text = user.name
+        }
+
+        if(readBoardList) {
+            showProgressDialog("Please Wait")
+            FireStoreClass().getBoardList(this)
         }
     }
 }

@@ -13,4 +13,5 @@
     <color name="primaryTextColor">#363A43</color>
     <color name="secondaryTextColor">#7A8089</color>>
     <color name="snackBarColor">#F24600</color>
+    <color name="dividerColor">#EAEAEA</color>
 </resources>
