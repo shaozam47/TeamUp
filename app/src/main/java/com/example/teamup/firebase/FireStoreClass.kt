@@ -137,11 +137,31 @@ class FireStoreClass {
             .addOnSuccessListener {
                     document ->
                 Log.i(activity.javaClass.simpleName, document.toString())
-                activity.boardDetails(document.toObject(Board::class.java)!!)
+                val board = document.toObject(Board::class.java)!!
+                board.documentID = document.id
+                activity.boardDetails(board)
             }
             .addOnFailureListener(){ e->
                 activity.hideProgressDialog()
                 Log.e(activity.javaClass.simpleName, "Error While Creating Board")
+            }
+    }
+
+    fun addUpdateTaskList(activity: TaskListActivity, board: Board) {
+        val taskListHashMap = HashMap<String, Any>()
+        taskListHashMap[Constants.TASK_LIST] = board.taskList
+
+        mFireStore.collection(Constants.BOARDS)
+            .document(board.documentID)
+            .update(taskListHashMap)
+            .addOnSuccessListener {
+                Log.e(activity.javaClass.simpleName, "Task List Successfully")
+                activity.addUpdateTaskListSuccess()
+            }
+            .addOnFailureListener{
+                exception->
+                activity.hideProgressDialog()
+                Log.e(activity.javaClass.simpleName, "Error While Creating Board", exception)
             }
     }
 }
