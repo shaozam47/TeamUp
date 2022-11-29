@@ -95,6 +95,34 @@ open class TaskListItemAdapter
                 context.deleteTaskList(position)
             }
         }
+
+        holder.itemView.tv_add_card.setOnClickListener {
+            holder.itemView.tv_add_card.visibility = View.GONE
+            holder.itemView.cv_add_card.visibility = View.VISIBLE
+        }
+
+        holder.itemView.ib_close_card_name.setOnClickListener {
+            holder.itemView.tv_add_card.visibility = View.VISIBLE
+            holder.itemView.cv_add_card.visibility = View.GONE
+        }
+
+        holder.itemView.ib_done_card_name.setOnClickListener{
+            val cardName = holder.itemView.et_card_name.text.toString()
+            if(cardName.isNotEmpty()) {
+                if(context is TaskListActivity) {
+                    context.addCardToTaskList(position, cardName)
+                }
+            }
+            else {
+                Toast.makeText(context, "Please Enter Card Name", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        holder.itemView.rv_card_list.layoutManager = LinearLayoutManager(context)
+        holder.itemView.rv_card_list.setHasFixedSize(true)
+
+        val adapter = CardListItemAdapter(context, model.cards)
+        holder.itemView.rv_card_list.adapter = adapter
     }
 
     override fun getItemCount(): Int {
