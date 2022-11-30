@@ -17,6 +17,15 @@
         android:theme="@style/Theme.TeamUp"
         tools:targetApi="31">
         <activity
+            android:name=".activities.CardDetailsActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".activities.MembersActivity"
             android:exported="true"
             android:screenOrientation="portrait"

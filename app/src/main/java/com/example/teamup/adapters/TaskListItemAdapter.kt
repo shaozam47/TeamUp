@@ -123,6 +123,16 @@ open class TaskListItemAdapter
 
         val adapter = CardListItemAdapter(context, model.cards)
         holder.itemView.rv_card_list.adapter = adapter
+
+        adapter.setOnClickListener(
+            object: CardListItemAdapter.OnClickListener{
+                override fun onClick(cardPosition: Int) {
+                    if(context is TaskListActivity) {
+                        context.cardDetails(position, cardPosition)
+                    }
+                }
+            }
+        )
     }
 
     override fun getItemCount(): Int {
