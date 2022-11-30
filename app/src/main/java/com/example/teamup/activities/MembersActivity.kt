@@ -21,6 +21,8 @@ import kotlinx.android.synthetic.main.item_member.view.*
 class MembersActivity : BaseActivity() {
 
     private lateinit var mBoardDetails: Board
+    private lateinit var mAssignedMembersList: ArrayList<User>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_members)
@@ -35,12 +37,19 @@ class MembersActivity : BaseActivity() {
     }
 
     fun setUpMemberList(list: ArrayList<User>) {
+        mAssignedMembersList = list
         hideProgressDialog()
+        mAssignedMembersList = list
         rv_members_list.layoutManager = LinearLayoutManager(this)
         rv_members_list.setHasFixedSize(true)
 
         val adapter = MembersListItemAdapter(this, list)
         rv_members_list.adapter = adapter
+    }
+
+    fun memberDetails(user: User) {
+        mBoardDetails.assignedTo.add(user.id)
+        FireStoreClass().assignMemberToBoard(this, mBoardDetails, user)
     }
 
     private fun setUpActionBar() {
@@ -77,6 +86,8 @@ class MembersActivity : BaseActivity() {
             val email =  dialog.et_email_search_member.text.toString()
             if(email.isNotEmpty()) {
                 dialog.dismiss()
+                showProgressDialog("Please Wait")
+                FireStoreClass().getMemberDetails(this, email)
             }
             else {
                 Toast.makeText(this, "Please Enter Email Address", Toast.LENGTH_SHORT).show()
@@ -87,5 +98,11 @@ class MembersActivity : BaseActivity() {
         }
 
         dialog.show()
+    }
+
+    fun memberAssignSuccess(user: User){
+        hideProgressDialog()
+        mAssignedMembersList.add(user)
+        setUpMemberList(mAssignedMembersList)
     }
 }

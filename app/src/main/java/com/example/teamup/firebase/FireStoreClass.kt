@@ -190,4 +190,42 @@ class FireStoreClass {
                 )
             }
     }
+
+    fun getMemberDetails(activity: MembersActivity, email: String) {
+        mFireStore.collection(Constants.USERS)
+            .whereEqualTo(Constants.EMAIL, email)
+            .get()
+            .addOnSuccessListener {
+                document ->
+                    if(document.documents.size > 0) {
+                        val user = document.documents[0].toObject(User::class.java)!!
+                        activity.memberDetails(user)
+                    }
+                    else {
+                        activity.hideProgressDialog()
+                        Toast.makeText(activity, "No Such Member Found", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .addOnFailureListener{
+                e->
+                    activity.hideProgressDialog()
+                    Log.e(activity.javaClass.simpleName, "Error", e)
+            }
+    }
+
+    fun assignMemberToBoard(activity: MembersActivity, board: Board, user: User) {
+        val assignedToHashMap = HashMap<String, Any>()
+        assignedToHashMap[Constants.ASSIGNED_TO] = board.assignedTo
+        mFireStore.collection(Constants.BOARDS)
+            .document(board.documentID)
+            .update(assignedToHashMap)
+            .addOnSuccessListener {
+                activity.memberAssignSuccess(user)
+            }
+            .addOnFailureListener {
+                e ->
+                activity.hideProgressDialog()
+                Log.e(activity.javaClass.simpleName, "Error While Updating", e)
+            }
+    }
 }
