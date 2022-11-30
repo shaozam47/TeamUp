@@ -23,6 +23,7 @@ class TaskListActivity : BaseActivity() {
 
     companion object {
         const val MEMBERS_REQUEST_CODE: Int = 13
+        const val CARD_DETAIL_REQUEST_CODE: Int = 14
     }
 
     private lateinit var mBoardDetails: Board
@@ -43,7 +44,8 @@ class TaskListActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode==Activity.RESULT_OK && requestCode== MEMBERS_REQUEST_CODE) {
+        if(resultCode==Activity.RESULT_OK &&
+            (requestCode==MEMBERS_REQUEST_CODE || requestCode== CARD_DETAIL_REQUEST_CODE)) {
             showProgressDialog("Please Wait")
             FireStoreClass().getBoardDetails(this, mBoardDocumentId)
         }
@@ -57,7 +59,7 @@ class TaskListActivity : BaseActivity() {
         intent.putExtra(Constants.BOARD_DETAIL, mBoardDetails)
         intent.putExtra(Constants.TASK_LIST_ITEM_POSITION, taskListPosition)
         intent.putExtra(Constants.CARD_LIST_ITEM_POSITION, cardPosition)
-        startActivity(intent)
+        startActivityForResult(intent, CARD_DETAIL_REQUEST_CODE)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
