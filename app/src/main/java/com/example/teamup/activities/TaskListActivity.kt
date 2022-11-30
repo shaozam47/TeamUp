@@ -14,6 +14,7 @@ import com.example.teamup.firebase.FireStoreClass
 import com.example.teamup.models.Board
 import com.example.teamup.models.Card
 import com.example.teamup.models.Task
+import com.example.teamup.models.User
 import com.example.teamup.util.Constants
 import kotlinx.android.synthetic.main.activity_my_profile.*
 import kotlinx.android.synthetic.main.activity_task_list.*
@@ -28,6 +29,7 @@ class TaskListActivity : BaseActivity() {
 
     private lateinit var mBoardDetails: Board
     private lateinit var mBoardDocumentId: String
+    private lateinit var mAssignedMemberDetails: ArrayList<User>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +61,7 @@ class TaskListActivity : BaseActivity() {
         intent.putExtra(Constants.BOARD_DETAIL, mBoardDetails)
         intent.putExtra(Constants.TASK_LIST_ITEM_POSITION, taskListPosition)
         intent.putExtra(Constants.CARD_LIST_ITEM_POSITION, cardPosition)
+        intent.putExtra(Constants.BOARD_MEMBER_LIST, mAssignedMemberDetails)
         startActivityForResult(intent, CARD_DETAIL_REQUEST_CODE)
     }
 
@@ -92,6 +95,9 @@ class TaskListActivity : BaseActivity() {
 
         val adapter = TaskListItemAdapter(this, board.taskList)
         rv_task_list.adapter = adapter
+
+        showProgressDialog("Please Wait")
+        FireStoreClass().getAssignedMembersListDetails(this, mBoardDetails.assignedTo)
     }
 
     private fun setUpActionBar() {
@@ -152,5 +158,10 @@ class TaskListActivity : BaseActivity() {
 
         mBoardDetails.taskList[position] = task
         FireStoreClass().addUpdateTaskList(this, mBoardDetails)
+    }
+
+    fun boardMemberDetailsList(list: ArrayList<User>) {
+        mAssignedMemberDetails = list
+        hideProgressDialog()
     }
 }
